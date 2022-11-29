@@ -2,9 +2,13 @@ import dotenv from "dotenv"; dotenv.config(); // Load .env file
 import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import fetch from "cross-fetch";
+import ApiController from "./api/_ApiController";
 
 const app = express();
 const port = process.env.PORT || 3080;
+
+// Add api
+app.use("/api", ApiController.router);
 
 if (process.env.NODE_ENV === "development") {
   // Proxy React from port 12463 to port {port} (ioncore-server)

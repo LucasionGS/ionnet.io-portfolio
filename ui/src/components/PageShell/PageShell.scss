@@ -1,0 +1,24 @@
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  // 50% {
+  //   transform: rotate(-360deg);
+  // }
+  100% {
+    transform: rotate(-720deg);
+  }
+}
+
+.rotate-ion-icon {
+  animation: rotate 5s ease-in-out infinite;
+}
+
+.header {
+  display: flex;
+  padding: 0 8px;
+  background-image: url("../../graphics/header.svg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}

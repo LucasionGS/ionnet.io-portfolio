@@ -1,27 +1,55 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.scss';
+import Router, { PageBuild } from './components/Router';
+import PageShell from './components/PageShell/PageShell';
+import { Alert, MantineProvider, Paper } from '@mantine/core';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Ioncore React Template</p>
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <MantineProvider theme={{
+      colorScheme: "dark",
+    }}>
+      <Router pages={routes} LoadingPage={Loading} ErrorPage={ErrorPage} />
+    </MantineProvider>
   );
 }
+
+const title = (t: string) => t + " | Ionnet Portfolio";
+const routes: PageBuild[] = [
+  {
+    path: /^\/$/,
+    content: () => import("./pages/Home").then((module) => module.default),
+    title: title("Home"),
+  },
+  {
+    path: /^\/projects(?:\/(\d+))?$/,
+    async content(id) {
+      const Projects = await import("./pages/Projects/Projects").then((module) => module.default);
+      return <Projects projectId={id ? +id : undefined} />;
+    },
+    title: title("Home"),
+  }
+];
+
+const Loading = () => (
+  <PageShell>
+    <Paper px="lg">
+      
+    </Paper>
+  </PageShell>
+);
+
+const ErrorPage = (error: {
+  statusCode?: number | undefined;
+  error?: Error | undefined;
+}) => (
+  <PageShell>
+    <Alert color="red" title="Error">
+      {/* <h1>Error</h1> */}
+      <h1>{error.statusCode ? `${error.statusCode}` : ""}</h1>
+      <p>{error.error ? error.error.message : ""}</p>
+    </Alert>
+  </PageShell>
+);
 
 export default App;
