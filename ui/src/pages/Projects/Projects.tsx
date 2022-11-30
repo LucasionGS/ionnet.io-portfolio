@@ -20,19 +20,38 @@ interface Project {
 export default function Projects(props: ProjectsProps) {
   const [projects, setProjects] = React.useState<Project[]>();
   const [project, setProject] = React.useState<Project>();
+  const [hideSidebar, setHideSidebar] = React.useState<boolean>(false);
 
+  function onResize() {
+    setHideSidebar(window.innerWidth < 576);
+  }
+  
   React.useEffect(() => {
     fetch("/api/projects")
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw new Error("Error fetching projects");
+        }
+      })
       .then((data: Project[]) => {
         setProjects(data);
         if (props.projectId) {
           setProject(data.find((p) => p.id === props.projectId));
         }
+      })
+      .catch((err) => {
+        console.error(err);
       });
-  }, [props.projectId]);
 
-  const age = Math.floor((Date.now() - new Date(2002, 2, 9).getTime()) / 1000 / 60 / 60 / 24 / 365.25)
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      window.removeEventListener("resize", onResize);
+    }
+  }, [props.projectId]);
+  
   return (
     <PageShell
       navbar={(
@@ -45,6 +64,9 @@ export default function Projects(props: ProjectsProps) {
             lg: 192,
             xl: 192,
           }}
+          style={{
+            width: 0,
+          }}
         >
           <Button.Group orientation="vertical">
             {/* <Button variant="subtle">
@@ -55,7 +77,6 @@ export default function Projects(props: ProjectsProps) {
                 {p.shortName}
               </Button>
             ))}
-
           </Button.Group>
         </Navbar>
       )}

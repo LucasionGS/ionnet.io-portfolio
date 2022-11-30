@@ -1,42 +1,37 @@
-import { Router } from "express";
+import { Router, json } from "express";
+import Project, { ProjectAttributes } from "../models/Project";
+import User from "../models/User";
 
 namespace ProjectsController {
   export const router = Router();
-  export interface Project {
-    id: number;
-    shortName: string;
-    name: string;
-    description: string;
-    link?: string;
-    body: string;
-  }
 
-  export function getProjects(): Project[] {
-    return [
-      {
-        id: 1,
-        shortName: "Ioncore",
-        name: "Ioncore Fullstack Template",
-        description: "Ioncore is a base template I use for React/Express full stack web apps.",
-        body: `
-          <p>
-            Ioncore is a base template I use for React/Express full stack web apps.
-            It is a work in progress, but I use it for some projects that need a React frontend and an Express backend.
-          </p>
-        `
-      }
-    ];
+  export async function getProjects(): Promise<Project[]> {
+    return Project.getProjects();
   }
-  router.get("/", (req, res) => {
-    res.json(getProjects());
+  router.get("/", async (req, res) => {
+    res.json(await getProjects());
   });
 
-  export function getProject(id: number): Project | undefined {
-    return getProjects().find(project => project.id === id);
+  export async function getProject(id: number): Promise<Project> {
+    return Project.getProject(id);
   }
-  router.get("/:id", (req, res) => {
-    res.json(getProject(+req.params.id));
+  router.get("/:id", async (req, res) => {
+    res.json(await getProject(+req.params.id));
   });
+
+  export async function createProject(project: ProjectAttributes): Promise<Project> {
+    return Project.createProject(project);
+  }
+  router.post("/", json(), async (req, res) => {
+    const user = await User.auth(req);
+    if (!user) {
+      res.status(401).send("Unauthorized");
+      return;
+    }
+    
+    res.json(await createProject(req.body));
+  });
+  
 }
 
 export default ProjectsController;

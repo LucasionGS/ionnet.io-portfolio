@@ -23,13 +23,14 @@ export default function PageShell(props: PageShellProps) {
           <Breadcrumbs>
             <Link href="/">Home</Link>
             <Link href="/projects">Projects</Link>
+            <Link href="/resume">Resume</Link>
           </Breadcrumbs>
         </Header>
       )}
       navbar={props.navbar}
       footer={(
         <Footer height={48} style={{ color: "white" }} px={8}>
-          <p>© 2021 Ionnet Portfolio</p>
+          <p>© {new Date().getFullYear()} Ionnet Portfolio</p>
         </Footer>
       )}
     >
