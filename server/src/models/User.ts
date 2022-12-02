@@ -66,6 +66,21 @@ export default class User extends Model<UserAttributes, UserCreationAttributes> 
     if (!user && !optional) throw new Error("Invalid token");
     return user;
   }
+
+  public toPublicJSON() {
+    return {
+      id: this.id,
+      username: this.username,
+    };
+  }
+
+  public toPrivateJSON() {
+    return {
+      id: this.id,
+      username: this.username,
+      token: this.token,
+    };
+  }
 }
 
 User.init({

@@ -1,5 +1,6 @@
 import { Router, json } from "express";
 import User, { UserAttributes } from "../models/User";
+import RequestError from "../objects/RequestError";
 
 namespace UserController {
   export const router = Router();
@@ -38,7 +39,14 @@ namespace UserController {
   router.post("/login", json(), async (req, res) => {
     const { username, password } = req.body as UserAttributes;
     
-    res.json(await login(username, password));
+    try {
+      const user = await login(username, password);
+      if (user) {
+        res.json(user.toPrivateJSON());
+      }
+    } catch (error: any) {
+      RequestError.unauthorized(error.message).send(res);
+    }
   });
 
   // export async function updateUser(user: Partial<UserAttributes> & { id: number }): Promise<User> {

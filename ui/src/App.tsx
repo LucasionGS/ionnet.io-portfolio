@@ -27,7 +27,12 @@ const routes: PageBuild[] = [
       const Projects = await import("./pages/Projects/Projects").then((module) => module.default);
       return <Projects projectId={id ? +id : undefined} />;
     },
-    title: title("Home"),
+    title: title("Projects"),
+  },
+  {
+    path: /^\/login$/,
+    content: () => import("./pages/Login").then((module) => module.default),
+    title: title("Login"),
   }
 ];
 
