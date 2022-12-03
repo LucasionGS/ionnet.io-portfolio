@@ -35,7 +35,7 @@ export default function Login() {
               setError(data.message);
             } else {
               User.setUser(data);
-              window.location.href = "/";
+              window.location.pathname = "/";
             }
             setLoading(false);
           }}>Login</Button>

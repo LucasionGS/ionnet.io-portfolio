@@ -1,8 +1,8 @@
 export default class User {
-  public id!: number;
   public username!: string;
+  public id!: number;
   public token!: string;
-  
+
   public static getUser(): User | null {
     const data = window.localStorage.getItem("user");
     if (data) {
@@ -11,8 +11,34 @@ export default class User {
     }
     return null;
   }
-  
-  public static setUser(user: User): void {
+
+  public static setUser(user: User) {
     window.localStorage.setItem("user", JSON.stringify(user));
+  }
+
+  public static logout(){
+    window.localStorage.removeItem("user");
+  }
+
+  /**
+   * Gets the currently logged in user's authentication headers.
+   */
+  public static get headers(): {
+    Authorization?: string;
+  } {
+    const user = User.getUser();
+    if (user) {
+      return user.headers;
+    }
+    return {};
+  }
+
+  /**
+   * Gets the user's authentication headers.
+   */
+  public get headers() {
+    return {
+      "Authorization": `Bearer ${this.token}`
+    }
   }
 }

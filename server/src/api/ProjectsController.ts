@@ -32,6 +32,19 @@ namespace ProjectsController {
     res.json(await createProject(req.body));
   });
   
+  export async function updateProject(id: number, project: ProjectAttributes): Promise<Project> {
+    return Project.updateProject(id, project);
+  }
+  router.put("/:id", json(), async (req, res) => {
+    const user = await User.auth(req);
+    if (!user) {
+      res.status(401).send("Unauthorized");
+      return;
+    }
+    
+    delete req.body.id;
+    res.json(await updateProject(+req.params.id, req.body));
+  });
 }
 
 export default ProjectsController;

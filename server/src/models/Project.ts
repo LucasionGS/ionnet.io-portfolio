@@ -36,6 +36,14 @@ export default class Project extends Model<ProjectAttributes, ProjectCreationAtt
   public static async createProject(project: ProjectAttributes): Promise<Project> {
     return Project.create(project);
   }
+
+  public static async updateProject(id: number, project: ProjectAttributes): Promise<Project> {
+    const p = await Project.getProject(id);
+    if (!p) {
+      throw new Error(`Project ${id} not found`);
+    }
+    return p.update(project);
+  }
 }
 
 Project.init({

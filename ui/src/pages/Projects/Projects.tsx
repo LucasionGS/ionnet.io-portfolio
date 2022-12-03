@@ -1,8 +1,11 @@
-import { Button, Navbar, Paper } from "@mantine/core";
 import React from "react";
+import { Button, Divider, Group, Navbar, Paper, Space } from "@mantine/core";
 import PageShell from "../../components/PageShell/PageShell";
 import Link from "../../components/Router/Link";
+import ReactHtmlParser, { processNodes, convertNodeToElement } from 'react-html-parser';
 import "./Projects.scss";
+import User from "../../models/User";
+import { IconEdit } from "@tabler/icons";
 
 interface ProjectsProps {
   projectId?: number;
@@ -20,12 +23,14 @@ interface Project {
 export default function Projects(props: ProjectsProps) {
   const [projects, setProjects] = React.useState<Project[]>();
   const [project, setProject] = React.useState<Project>();
-  const [hideSidebar, setHideSidebar] = React.useState<boolean>(false);
+  const [hideSidebar, setHideSidebar] = React.useState<boolean>(window.innerWidth < 576);
+
+  const user = User.getUser();
 
   function onResize() {
     setHideSidebar(window.innerWidth < 576);
   }
-  
+
   React.useEffect(() => {
     fetch("/api/projects")
       .then((res) => {
@@ -51,7 +56,7 @@ export default function Projects(props: ProjectsProps) {
       window.removeEventListener("resize", onResize);
     }
   }, [props.projectId]);
-  
+
   return (
     <PageShell
       navbar={(
@@ -72,7 +77,7 @@ export default function Projects(props: ProjectsProps) {
             {/* <Button variant="subtle">
               <Link href="/projects">Any</Link>
             </Button> */}
-            {projects?.map((p) => (
+            {!hideSidebar && projects?.map((p) => (
               <Button variant="subtle" component={Link} href={`/projects/${p.id}`}>
                 {p.shortName}
               </Button>
@@ -82,10 +87,27 @@ export default function Projects(props: ProjectsProps) {
       )}
     >
       <Paper px="lg">
+        {hideSidebar && (<Group>
+          {projects?.map((p) => (
+            <Button variant="subtle" component={Link} href={`/projects/${p.id}`}>
+              {p.shortName}
+            </Button>
+          ))}
+        </Group>)}
         <br />
         {project ? (
           <>
-            <h1>{project.name}</h1>
+            <h1>
+              {user && (
+                <>
+                  <Link href={`/admin/project/${project.id}`}>
+                    <IconEdit />
+                  </Link>
+                  &nbsp;
+                </>
+              )}
+              {project.name}
+            </h1>
             <p>{project.description}</p>
             {
               project.link && (
@@ -95,7 +117,10 @@ export default function Projects(props: ProjectsProps) {
                 </p>
               )
             }
-            <p>{project.body}</p>
+            <Divider />
+            {
+              ReactHtmlParser(project.body)
+            }
           </>
         ) : (
           <>

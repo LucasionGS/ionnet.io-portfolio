@@ -25,6 +25,10 @@ export interface PageBuild {
   content: React.ReactNode | ((...args: string[]) => Promise<React.ReactNode | React.FC> | React.ReactNode | React.FC);
 }
 
+export function useRouter() {
+  return React.useContext(AppContext);
+}
+
 export default function Router(props: {
   pages: PageBuild[],
   ErrorPage?: (error: {
