@@ -112,8 +112,7 @@ export default function Projects(props: ProjectsProps) {
             {
               project.link && (
                 <p>
-                  <a href={project.link
-                  }>{project.link}</a>
+                  <a target="_blank" href={project.link}>{project.link}</a>
                 </p>
               )
             }

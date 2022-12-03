@@ -10,7 +10,14 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
-  display: inline-block;
+  font-size: 85%;
+  color: #f27500;
+}
+
+pre > code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+  display: block;
   padding: 0.2rem 0.4rem;
   font-size: 85%;
   line-height: 1.5;
