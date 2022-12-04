@@ -7,6 +7,8 @@ export default class Project {
   public description!: string;
   public link?: string;
   public body!: string;
+  public path?: string;
+  public hidden!: boolean;
 
   public static async getProject(id: number): Promise<Project> {
     return fetch(`/api/projects/${id}`).then(async res => Object.assign(new Project, await res.json()));
@@ -18,6 +20,8 @@ export default class Project {
     description: string,
     link?: string,
     body: string,
+    path?: string,
+    hidden: boolean,
   }): Promise<Project> {
     return fetch("/api/projects", {
       method: "POST",

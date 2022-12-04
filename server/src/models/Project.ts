@@ -8,6 +8,8 @@ export interface ProjectAttributes {
   description: string;
   link?: string;
   body: string;
+  path?: string;
+  hidden: boolean;
 }
 
 export interface ProjectCreationAttributes {
@@ -15,6 +17,8 @@ export interface ProjectCreationAttributes {
   name: string;
   description: string;
   body: string;
+  path?: string;
+  hidden: boolean;
 }
 
 export default class Project extends Model<ProjectAttributes, ProjectCreationAttributes> implements ProjectAttributes {
@@ -24,13 +28,32 @@ export default class Project extends Model<ProjectAttributes, ProjectCreationAtt
   public description!: string;
   public link?: string;
   public body!: string;
+  public path?: string;
+  public hidden!: boolean;
+
+
+  public static async getProjectByPath(path: string): Promise<Project> {
+    return Project.findOne({
+      where: {
+        path: path
+      }
+    });
+  }
 
   public static async getProject(id: number): Promise<Project> {
     return Project.findByPk(id);
   }
 
-  public static async getProjects(): Promise<Project[]> {
-    return Project.findAll();
+  public static async getProjects(includeHidden: boolean = false): Promise<Project[]> {
+    return Project.findAll(
+      includeHidden
+        ? {}
+        : {
+          where: {
+            hidden: false,
+          },
+        }
+    );
   }
 
   public static async createProject(project: ProjectAttributes): Promise<Project> {
@@ -71,6 +94,15 @@ Project.init({
   body: {
     type: DataTypes.TEXT,
     allowNull: false
+  },
+  path: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  hidden: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
   }
 }, {
   sequelize: sql,

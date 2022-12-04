@@ -1,5 +1,5 @@
 import React from "react"
-import { Alert, Button, Paper, TextInput } from "@mantine/core";
+import { Alert, Button, Checkbox, Paper, TextInput } from "@mantine/core";
 import { RichTextEditor, Link as TipTapLink } from "@mantine/tiptap";
 import PageShell from "../../components/PageShell/PageShell";
 import User from "../../models/User";
@@ -24,6 +24,9 @@ export default function ManageProject(props: { id?: number }) {
   const [shortName, setShortName] = React.useState<string>("Project");
   const [description, setDescription] = React.useState<string>("Project Description");
   const [link, setLink] = React.useState<string>("https://");
+  const [path, setPath] = React.useState<string>("");
+  const [hidden, setHidden] = React.useState<boolean>(false);
+
   const [error, setError] = React.useState<string>("");
   const [success, setSuccess] = React.useState<React.ReactNode>("");
   const [loading, setLoading] = React.useState<boolean>(false);
@@ -33,7 +36,7 @@ export default function ManageProject(props: { id?: number }) {
   const router = useRouter();
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure(),
       Underline,
       TipTapLink,
       Superscript,
@@ -64,6 +67,8 @@ export default function ManageProject(props: { id?: number }) {
             setShortName(project.shortName);
             setDescription(project.description);
             setLink(project.link);
+            setPath(project.path);
+            setHidden(project.hidden);
             editor.commands.setContent(project.body);
 
             setInitialized(true);
@@ -92,6 +97,8 @@ export default function ManageProject(props: { id?: number }) {
       description,
       link,
       body: html,
+      path,
+      hidden,
     };
 
     if (id) {
@@ -105,7 +112,7 @@ export default function ManageProject(props: { id?: number }) {
       }).then(async res => {
         if (res.ok) {
           setSuccess(
-            <Link href={`/projects/${id}`}>
+            <Link href={path || `/projects/${id}`}>
               Project updated
             </Link>
           );
@@ -128,10 +135,11 @@ export default function ManageProject(props: { id?: number }) {
         if (res.ok) {
           const data = await res.json();
           setSuccess(
-            <Link href={`/projects/${data.id}`}>
+            <Link href={path || `/projects/${data.id}`}>
               Project created successfully
             </Link>
           );
+          router.setPath(`/admin/projects/${data.id}`);
           setError("");
         } else {
           setError("Error creating project");
@@ -182,6 +190,22 @@ export default function ManageProject(props: { id?: number }) {
             value={link}
             onChange={(e) => setLink(e.currentTarget.value)}
           />
+          <TextInput
+            type="text"
+            label="Page path"
+            value={path}
+            onChange={(e) => setPath(e.currentTarget.value)}
+            description="The path to the project. This is used to generate the URL for the project."
+            pattern="^\/[a-zA-Z0-9\-_]*$"
+          />
+          <br />
+          <Checkbox
+            label="Hidden"
+            checked={hidden}
+            onChange={(e) => setHidden(e.currentTarget.checked)}
+            description="If checked, the project will not be visible in the project list. This is useful for projects that are not yet ready to be shown, or used as a page path."
+          />
+          <br />
           {editor && initialized && (
             <RichTextEditor editor={editor}>
               <RichTextEditor.Toolbar sticky stickyOffset={60}>

@@ -60,11 +60,13 @@ export default class User extends Model<UserAttributes, UserCreationAttributes> 
   }
 
   public static async auth(req: Request, optional = false): Promise<User> {
-    const token = req.headers.authorization.replace("Bearer ", "");
-    if (!token) throw new Error("No authorization header provided");
-    const user = await User.findOne({ where: { token } });
-    if (!user && !optional) throw new Error("Invalid token");
-    return user;
+    const token = req.headers.authorization?.replace("Bearer ", "");
+    if (!token && !optional) throw new Error("No authorization header provided");
+    else {
+      const user = token ? await User.findOne({ where: { token } }) : null;
+      if (!user && !optional) throw new Error("Invalid token");
+      return user;
+    }
   }
 
   public toPublicJSON() {

@@ -2,9 +2,9 @@ import { Paper } from "@mantine/core";
 import React from "react";
 import PageShell from "../components/PageShell/PageShell";
 import Link from "../components/Router/Link";
+import { age } from "../helper/variables";
 
 export default function Home() {
-  const age = Math.floor((Date.now() - new Date(2002, 2, 9).getTime()) / 1000 / 60 / 60 / 24 / 365.25)
   return (
     <PageShell>
       <Paper px="lg">

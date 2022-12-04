@@ -2,10 +2,11 @@ import React from 'react';
 import './App.scss';
 import Router from './components/Router';
 import PageShell from './components/PageShell/PageShell';
-import { Alert, MantineProvider, Paper } from '@mantine/core';
+import { MantineProvider, Paper } from '@mantine/core';
 import { SpotlightAction, SpotlightProvider, SpotlightProviderProps } from '@mantine/spotlight';
 import { routes } from './routes';
 import User from './models/User';
+import { ErrorPage } from './ErrorPage';
 
 function App() {
   const user = User.getUser();
@@ -34,7 +35,7 @@ const adminActions: SpotlightAction[] = [
     description: "Create a new project",
     closeOnTrigger: true,
     onTrigger() {
-      window.location.pathname = "/admin/project/new";
+      window.location.pathname = "/admin/projects/new";
     },
   },
   // Logout
@@ -85,19 +86,6 @@ const Loading = () => (
     <Paper px="lg">
 
     </Paper>
-  </PageShell>
-);
-
-const ErrorPage = (error: {
-  statusCode?: number | undefined;
-  error?: Error | undefined;
-}) => (
-  <PageShell>
-    <Alert color="red" title="Error">
-      {/* <h1>Error</h1> */}
-      <h1>{error.statusCode ? `${error.statusCode}` : ""}</h1>
-      <p>{error.error ? error.error.message : ""}</p>
-    </Alert>
   </PageShell>
 );
 

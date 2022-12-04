@@ -1,23 +1,25 @@
 import React from "react";
-import { Button, Divider, Group, Navbar, Paper, Space } from "@mantine/core";
+import { Button, Divider, Group, Navbar, Paper } from "@mantine/core";
 import PageShell from "../../components/PageShell/PageShell";
 import Link from "../../components/Router/Link";
-import ReactHtmlParser, { processNodes, convertNodeToElement } from 'react-html-parser';
 import "./Projects.scss";
 import User from "../../models/User";
-import { IconEdit } from "@tabler/icons";
+import { IconEdit, IconEyeOff } from "@tabler/icons";
+import { renderProject } from "./renderProject";
 
 interface ProjectsProps {
   projectId?: number;
 }
 
-interface Project {
+export interface Project {
   id: number;
   shortName: string;
   name: string;
   description: string;
   link: string;
   body: string;
+  hidden: boolean;
+  path: string;
 }
 
 export default function Projects(props: ProjectsProps) {
@@ -32,7 +34,11 @@ export default function Projects(props: ProjectsProps) {
   }
 
   React.useEffect(() => {
-    fetch("/api/projects")
+    fetch("/api/projects", {
+      headers: {
+        ...User.headers
+      }
+    })
       .then((res) => {
         if (res.ok) {
           return res.json();
@@ -78,7 +84,7 @@ export default function Projects(props: ProjectsProps) {
               <Link href="/projects">Any</Link>
             </Button> */}
             {!hideSidebar && projects?.map((p) => (
-              <Button variant="subtle" component={Link} href={`/projects/${p.id}`}>
+              <Button variant="subtle" component={Link} href={`/projects/${p.id}`} key={p.id} leftIcon={p.hidden ? <IconEyeOff /> : null}>
                 {p.shortName}
               </Button>
             ))}
@@ -89,7 +95,7 @@ export default function Projects(props: ProjectsProps) {
       <Paper px="lg">
         {hideSidebar && (<Group>
           {projects?.map((p) => (
-            <Button variant="subtle" component={Link} href={`/projects/${p.id}`}>
+            <Button variant="subtle" component={Link} href={`/projects/${p.id}`} key={p.id}>
               {p.shortName}
             </Button>
           ))}
@@ -100,7 +106,7 @@ export default function Projects(props: ProjectsProps) {
             <h1>
               {user && (
                 <>
-                  <Link href={`/admin/project/${project.id}`}>
+                  <Link href={`/admin/projects/${project.id}`}>
                     <IconEdit />
                   </Link>
                   &nbsp;
@@ -110,15 +116,15 @@ export default function Projects(props: ProjectsProps) {
             </h1>
             <p>{project.description}</p>
             {
-              project.link && (
+              (project.link || project.path) && (
                 <p>
-                  <a target="_blank" href={project.link}>{project.link}</a>
+                  <a target="_blank" rel="noreferrer" href={project.link || project.path}>{project.link || project.path}</a>
                 </p>
               )
             }
             <Divider />
             {
-              ReactHtmlParser(project.body)
+              renderProject(project)
             }
           </>
         ) : (
@@ -134,3 +140,5 @@ export default function Projects(props: ProjectsProps) {
     </PageShell>
   )
 }
+
+
